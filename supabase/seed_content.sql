@@ -6,33 +6,32 @@
 -- 데모 로그인: sydney_sad@plory.app / Plory123
 -- =========================================================
 
--- ---------- 식물 종 ----------
+-- ---------- 식물 종 (요청 CSV 반영) ----------
 insert into species (id, name, image_url) values
-  ('c0000000-0000-4000-8000-000000000001','몬스테라 델리시오사','https://images.unsplash.com/photo-1614594975525-e45190c55d0b?w=600&q=80'),
-  ('c0000000-0000-4000-8000-000000000002','몬스테라 아단소니','https://images.unsplash.com/photo-1545241047-6083a3684587?w=600&q=80'),
-  ('c0000000-0000-4000-8000-000000000003','몬스테라 알보','https://images.unsplash.com/photo-1463320726281-696a485928c7?w=600&q=80'),
-  ('c0000000-0000-4000-8000-000000000004','스투키','https://images.unsplash.com/photo-1593691509543-c55fb32d8de5?w=600&q=80'),
-  ('c0000000-0000-4000-8000-000000000005','황금벤자민','https://images.unsplash.com/photo-1485955900006-10f4d324d411?w=600&q=80'),
-  ('c0000000-0000-4000-8000-000000000006','금전수','https://images.unsplash.com/photo-1509423350716-97f9360b4e09?w=600&q=80'),
-  ('c0000000-0000-4000-8000-000000000007','호야','https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=600&q=80'),
-  ('c0000000-0000-4000-8000-000000000008','안스리움','https://images.unsplash.com/photo-1604762524889-3e2fcc145683?w=600&q=80'),
-  ('c0000000-0000-4000-8000-000000000009','스파티필름','https://images.unsplash.com/photo-1602923668104-8f9e03e77e62?w=600&q=80'),
-  ('c0000000-0000-4000-8000-000000000010','제라늄','https://images.unsplash.com/photo-1632207691143-643e2a9a9361?w=600&q=80'),
-  ('c0000000-0000-4000-8000-000000000011','아글라오네마','https://images.unsplash.com/photo-1572688484438-313a6e50c333?w=600&q=80'),
-  ('c0000000-0000-4000-8000-000000000012','아레카야자','https://images.unsplash.com/photo-1591958911259-bee2173bdccc?w=600&q=80'),
-  ('c0000000-0000-4000-8000-000000000013','알로카시아 몬타나','https://images.unsplash.com/photo-1530968033775-2c92736b131e?w=600&q=80'),
-  ('c0000000-0000-4000-8000-000000000014','보스턴 고사리','https://images.unsplash.com/photo-1521334884684-d80222895322?w=600&q=80'),
-  ('c0000000-0000-4000-8000-000000000015','목베고니아','https://images.unsplash.com/photo-1466692476868-aef1dfb1e735?w=600&q=80'),
-  ('c0000000-0000-4000-8000-000000000016','산세베리아','https://images.unsplash.com/photo-1453904300235-0f2f60b15b5d?w=600&q=80'),
-  ('c0000000-0000-4000-8000-000000000017','스킨답서스','https://images.unsplash.com/photo-1614594975525-e45190c55d0b?w=600&q=80'),
-  ('c0000000-0000-4000-8000-000000000018','테이블야자','https://images.unsplash.com/photo-1591958911259-bee2173bdccc?w=600&q=80'),
-  ('c0000000-0000-4000-8000-000000000019','고무나무','https://images.unsplash.com/photo-1485955900006-10f4d324d411?w=600&q=80'),
-  ('c0000000-0000-4000-8000-000000000020','칼라데아','https://images.unsplash.com/photo-1572688484438-313a6e50c333?w=600&q=80'),
-  ('c0000000-0000-4000-8000-000000000021','필로덴드론','https://images.unsplash.com/photo-1463320726281-696a485928c7?w=600&q=80'),
-  ('c0000000-0000-4000-8000-000000000022','드라세나','https://images.unsplash.com/photo-1530968033775-2c92736b131e?w=600&q=80'),
-  ('c0000000-0000-4000-8000-000000000023','올리브나무','https://images.unsplash.com/photo-1466692476868-aef1dfb1e735?w=600&q=80'),
-  ('c0000000-0000-4000-8000-000000000024','유칼립투스','https://images.unsplash.com/photo-1521334884684-d80222895322?w=600&q=80'),
-  ('c0000000-0000-4000-8000-000000000025','디펜바키아','https://images.unsplash.com/photo-1602923668104-8f9e03e77e62?w=600&q=80')
+  ('c0000000-0000-4000-8000-000000000001','몬스테라 델리시오사','https://dustfreedom.com/cdn/shop/files/monstera-3.jpg?v=1719500141&width=990'),
+  ('c0000000-0000-4000-8000-000000000002','몬스테라 아단소니','https://i.pinimg.com/1200x/44/2a/40/442a40f3be4e681b940d59678b4f4f96.jpg'),
+  ('c0000000-0000-4000-8000-000000000003','몬스테라 알보','https://economychosun.com/site/data/img_dir/2022/07/04/2022070400012_0.jpg'),
+  ('c0000000-0000-4000-8000-000000000004','필로덴드론 버킨','https://www.simpol.co.kr/data/shopimages/product/302420371/201911/003002000000026396.jpg'),
+  ('c0000000-0000-4000-8000-000000000005','필로덴드론 핑크프린세스','https://botanical.house/wp-content/uploads/2019/05/re_5317_n.jpg'),
+  ('c0000000-0000-4000-8000-000000000006','필로덴드론 콩고','https://m.simkki.com/web/product/big/20200408/77eb1a9a5638397647f27a0fa8f08573.jpg'),
+  ('c0000000-0000-4000-8000-000000000007','스킨답서스','https://contents.kyobobook.co.kr/sih/fit-in/550x0/gift/pdt/1359/S1676804886720.jpg?t=2967613'),
+  ('c0000000-0000-4000-8000-000000000008','황금 포토스','https://dustfreedom.com/cdn/shop/files/IMG-7793.jpg?v=1722446396&width=990'),
+  ('c0000000-0000-4000-8000-000000000009','벵갈 고무나무','https://kt1144.co.kr/data/item/1657949929/67GF6rCI1_1.jpg'),
+  ('c0000000-0000-4000-8000-000000000010','떡갈잎 고무나무','https://www.ikea.com/kr/ko/images/products/ficus-lyrata-potted-plant-fiddle-leaf-fig__0574170_pe668128_s5.jpg?f=s'),
+  ('c0000000-0000-4000-8000-000000000011','올리브나무','https://img4.dhresource.com/webp/m/0x0/f3/albu/ys/m/22/fe22ef3d-10c6-4db9-9408-94c782cd2dda.jpg'),
+  ('c0000000-0000-4000-8000-000000000012','아레카야자','https://www.ozflower.co.kr/data/item/thumb-1563437183613l0_700x700.jpg'),
+  ('c0000000-0000-4000-8000-000000000013','켄차야자','https://contents.sixshop.com/thumbnails/uploadedFiles/20883/product/image_1610705250525_750.jpg'),
+  ('c0000000-0000-4000-8000-000000000014','에키노캑터스','https://webp2.xplant.co.kr/data/thumb/item/280x300-2/1694848710'),
+  ('c0000000-0000-4000-8000-000000000015','금호선인장','https://ecimg.cafe24img.com/pg955b49925335084/sikmulhaengsung/web/product/big/20250427/89ff8a7d0aed651426f73a34171a68fc.jpg'),
+  ('c0000000-0000-4000-8000-000000000016','하월시아','https://file.simpol.co.kr/data/shopimages/product/302423363/202206/004022000000017898.jpg'),
+  ('c0000000-0000-4000-8000-000000000017','산세베리아','https://f-mans.com/data/goods/1/2024/06/93_temp_17180699205942view.png'),
+  ('c0000000-0000-4000-8000-000000000018','스파티필름','https://botanical.house/wp-content/uploads/2023/04/5rg22df6.webp'),
+  ('c0000000-0000-4000-8000-000000000019','칼라데아','https://m.lamiltro.com/web/product/big/202110/87bb30b1bcc023c1492e4d9107ea2334.jpg'),
+  ('c0000000-0000-4000-8000-000000000020','안스리움','https://img1.daumcdn.net/thumb/R1280x0.fwebp/?fname=http://t1.daumcdn.net/brunch/service/user/eydl/image/M7ytPm-N5aq1WEdGNWl_htQhnkk.JPG'),
+  ('c0000000-0000-4000-8000-000000000021','파키라','https://f-mans.com/data/goods/1/2024/03/901_temp_17103143956900view.jpg'),
+  ('c0000000-0000-4000-8000-000000000022','유칼립투스','https://f-mans.com/data/goods/1/2024/02/861_temp_17078039247780list1.jpg'),
+  ('c0000000-0000-4000-8000-000000000023','알로카시아','https://f-mans.com/data/goods/1/2024/02/861_temp_17078039247780list1.jpg'),
+  ('c0000000-0000-4000-8000-000000000024','보스턴 고사리','https://ecimg.cafe24img.com/pg955b49925335084/sikmulhaengsung/web/product/big/20260228/494bc198e95609a39f94bbab99be6430.jpg')
 on conflict (name) do update set image_url = excluded.image_url;
 
 -- ---------- 데모 사용자 ----------

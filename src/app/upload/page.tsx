@@ -45,6 +45,8 @@ function UploadInner() {
   const [uploading, setUploading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [popup, setPopup] = useState<string | null>(null);
+  const from = params.get("from") ?? "/home?tab=__all__";
+  const carry = params.get("carry") === "1";
 
   // 초기화: 세션 + 드래프트 복원 + (식물 등록 후) 새 식물 선택
   useEffect(() => {
@@ -53,13 +55,22 @@ function UploadInner() {
       router.replace("/login");
       return;
     }
-    const d = loadDraft();
-    setImages(d.images);
-    setCaption(d.caption);
     const fromRegister = params.get("plant");
-    setPlantId(fromRegister ?? d.plantId);
+    // 기본 진입은 초기화, 식물 등록을 거쳐 복귀할 때만 드래프트 유지
+    if (fromRegister || carry) {
+      const d = loadDraft();
+      setImages(d.images);
+      setCaption(d.caption);
+      setPlantId(fromRegister ?? d.plantId);
+    } else {
+      sessionStorage.removeItem(DRAFT_KEY);
+      setImages([]);
+      setCaption("");
+      setPlantId(null);
+      setActiveImg(0);
+    }
     setReady(true);
-  }, [router, params]);
+  }, [router, params, carry]);
 
   const refreshPlants = useCallback(async () => {
     const user = getSession();
@@ -95,9 +106,18 @@ function UploadInner() {
 
     const ok = files.filter((f) => /image\/(jpeg|png|heic|heif|webp)/i.test(f.type));
     if (ok.length < files.length) {
-      setPopup("지원하지 않는 형식의 이미지가 포함되어있습니다");
+      setPopup(
+        "지원하지 않는 형식의 이미지가 포함되어있습니다.\n이미지 지원 포맷: JPG, PNG, HEIC"
+      );
     }
     const room = MAX_IMAGES - images.length;
+    if (room <= 0) {
+      setPopup(`사진은 최대 ${MAX_IMAGES}장까지 선택할 수 있습니다.`);
+      return;
+    }
+    if (ok.length > room) {
+      setPopup(`사진은 최대 ${MAX_IMAGES}장까지 선택할 수 있습니다.`);
+    }
     const slice = ok.slice(0, Math.max(0, room));
     if (slice.length === 0) return;
 
@@ -113,6 +133,13 @@ function UploadInner() {
     } finally {
       setUploading(false);
     }
+  };
+
+  const removeImage = (index: number) => {
+    const next = images.filter((_, i) => i !== index);
+    setImages(next);
+    setActiveImg((cur) => Math.max(0, Math.min(cur, next.length - 1)));
+    persist({ images: next });
   };
 
   const selectedPlant = plants.find((p) => p.id === plantId) ?? null;
@@ -131,7 +158,7 @@ function UploadInner() {
         images,
       });
       sessionStorage.removeItem(DRAFT_KEY);
-      router.replace(`/post/${postId}`);
+      router.replace(`/post/${postId}?from=${encodeURIComponent(from)}`);
     } catch {
       setPopup("게시에 실패했습니다. 다시 시도해주세요.");
       setSubmitting(false);
@@ -140,14 +167,20 @@ function UploadInner() {
 
   const goRegisterPlant = () => {
     persist({});
-    router.push("/upload/plant");
+    router.push(`/upload/plant?from=${encodeURIComponent(from)}`);
   };
 
   if (!ready) return <Spinner />;
 
   return (
     <div className="flex min-h-screen flex-col pb-24 sm:min-h-[calc(100vh-3rem)]">
-      <TopBar title="새 게시물" onBack={() => router.replace("/home")} />
+      <TopBar
+        title="새 게시물"
+        onBack={() => {
+          sessionStorage.removeItem(DRAFT_KEY);
+          router.replace(from);
+        }}
+      />
 
       <div className="flex-1 animate-fade-up">
         {/* 이미지 미리보기 */}
@@ -168,7 +201,13 @@ function UploadInner() {
         <div className="no-scrollbar flex gap-2 overflow-x-auto px-4 py-3">
           <button
             type="button"
-            onClick={() => fileRef.current?.click()}
+            onClick={() => {
+              if (images.length >= MAX_IMAGES) {
+                setPopup(`사진은 최대 ${MAX_IMAGES}장까지 선택할 수 있습니다.`);
+                return;
+              }
+              fileRef.current?.click();
+            }}
             className="flex h-16 w-16 flex-none flex-col items-center justify-center rounded-lg bg-field text-sub"
           >
             {uploading ? (
@@ -185,17 +224,25 @@ function UploadInner() {
             )}
           </button>
           {images.map((url, i) => (
-            <button
+            <div
               key={i}
-              type="button"
-              onClick={() => setActiveImg(i)}
-              className={`h-16 w-16 flex-none overflow-hidden rounded-lg border-2 ${
+              className={`relative h-16 w-16 flex-none overflow-hidden rounded-lg border-2 ${
                 activeImg === i ? "border-ink" : "border-transparent"
               }`}
             >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={url} alt="" className="h-full w-full object-cover" />
-            </button>
+              <button type="button" onClick={() => setActiveImg(i)} className="h-full w-full">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={url} alt="" className="h-full w-full object-cover" />
+              </button>
+              <button
+                type="button"
+                onClick={() => removeImage(i)}
+                className="absolute right-0 top-0 flex h-5 w-5 items-center justify-center rounded-full bg-black/70 text-white"
+                aria-label="사진 제거"
+              >
+                ×
+              </button>
+            </div>
           ))}
         </div>
 
@@ -220,7 +267,7 @@ function UploadInner() {
             </button>
 
             {dropdownOpen && (
-              <div className="absolute z-20 mt-1 w-full overflow-hidden rounded-xl border border-line bg-white shadow-card animate-pop-in">
+              <div className="absolute z-20 mt-1 max-h-56 w-full overflow-y-auto rounded-xl border border-line bg-white shadow-card animate-pop-in">
                 {plants.map((p) => (
                   <button
                     key={p.id}

@@ -1,6 +1,6 @@
 "use client";
 
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 type Tab = "home" | "upload" | "garden";
 
@@ -8,15 +8,18 @@ type Tab = "home" | "upload" | "garden";
 export default function BottomNav({ active }: { active?: Tab }) {
   const router = useRouter();
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const current: Tab =
     active ?? (pathname?.startsWith("/upload") ? "upload" : "home");
+  const query = searchParams?.toString();
+  const currentUrl = `${pathname ?? "/home"}${query ? `?${query}` : ""}`;
 
   return (
-    <nav className="absolute inset-x-0 bottom-0 z-30 mx-auto flex h-16 max-w-[420px] items-center justify-around bg-key px-6 sm:rounded-b-[28px]">
+    <nav className="fixed inset-x-0 bottom-0 left-1/2 z-30 flex h-16 w-full max-w-[420px] -translate-x-1/2 items-center justify-around bg-key px-6 sm:rounded-b-[28px]">
       {/* 홈 */}
       <button
         type="button"
-        onClick={() => router.push("/home")}
+        onClick={() => router.push("/home?refresh=1")}
         aria-label="홈"
         className="flex h-12 w-12 items-center justify-center transition-transform active:scale-90"
       >
@@ -35,7 +38,7 @@ export default function BottomNav({ active }: { active?: Tab }) {
       {/* 업로드 (+) */}
       <button
         type="button"
-        onClick={() => router.push("/upload")}
+        onClick={() => router.push(`/upload?from=${encodeURIComponent(currentUrl)}`)}
         aria-label="새 게시물"
         className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-white/80 transition-transform active:scale-90"
       >

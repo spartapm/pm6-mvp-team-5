@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
+import { Suspense, useEffect, useRef, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import TopBar from "@/components/TopBar";
 import {
   createPlant,
@@ -13,9 +13,11 @@ import type { Species } from "@/lib/types";
 
 const MAX_NAME = 20;
 
-export default function PlantRegisterPage() {
+function PlantRegisterInner() {
   const router = useRouter();
+  const params = useSearchParams();
   const fileRef = useRef<HTMLInputElement>(null);
+  const from = params.get("from") ?? "/home?tab=__all__";
 
   const [image, setImage] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
@@ -93,7 +95,7 @@ export default function PlantRegisterPage() {
         nickname: nickname.trim() ? nickname.trim() : null,
         imageUrl: image,
       });
-      router.replace(`/upload?plant=${plant.id}`);
+      router.replace(`/upload?plant=${plant.id}&carry=1&from=${encodeURIComponent(from)}`);
     } catch {
       setPopup("등록에 실패했습니다. 다시 시도해주세요.");
       setSubmitting(false);
@@ -102,7 +104,10 @@ export default function PlantRegisterPage() {
 
   return (
     <div className="flex min-h-screen flex-col pb-24 sm:min-h-[calc(100vh-3rem)]">
-      <TopBar title="내 식물 등록하기" onBack={() => router.replace("/upload")} />
+      <TopBar
+        title="내 식물 등록하기"
+        onBack={() => router.replace(`/upload?carry=1&from=${encodeURIComponent(from)}`)}
+      />
 
       <div className="flex-1 animate-fade-up">
         {/* 대표 이미지 추가 */}
@@ -218,5 +223,13 @@ export default function PlantRegisterPage() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function PlantRegisterPage() {
+  return (
+    <Suspense fallback={<div className="flex min-h-screen items-center justify-center">로딩 중…</div>}>
+      <PlantRegisterInner />
+    </Suspense>
   );
 }

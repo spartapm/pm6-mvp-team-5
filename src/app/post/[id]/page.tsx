@@ -1,26 +1,35 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import TopBar from "@/components/TopBar";
 import BottomNav from "@/components/BottomNav";
 import Spinner from "@/components/Spinner";
 import {
   getPost,
+  getPostReactionSummary,
   getSession,
   isFollowing,
+  setPostReaction,
   toggleFollow,
+  type ReactionType,
 } from "@/lib/store";
 import { formatDate, type Post } from "@/lib/types";
 
 export default function PostDetailPage() {
   const router = useRouter();
   const params = useParams<{ id: string }>();
+  const searchParams = useSearchParams();
   const id = params?.id;
+  const from = searchParams.get("from") ?? "/home?tab=__all__";
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [post, setPost] = useState<Post | null>(null);
+  const [sun, setSun] = useState(0);
+  const [water, setWater] = useState(0);
+  const [sprout, setSprout] = useState(0);
+  const [myReaction, setMyReaction] = useState<ReactionType | null>(null);
   const [following, setFollowing] = useState(false);
   const [imgIndex, setImgIndex] = useState(0);
   const trackRef = useRef<HTMLDivElement>(null);
@@ -33,7 +42,17 @@ export default function PostDetailPage() {
       const p = await getPost(id);
       setPost(p);
       const user = getSession();
-      if (p && user) setFollowing(await isFollowing(user.id, p.speciesId));
+      if (p) {
+        if (user) setFollowing(await isFollowing(user.id, p.speciesId));
+        const summary = await getPostReactionSummary(p.id, user?.id);
+        const hasSeedCounts =
+          p.reactionSun + p.reactionWater + p.reactionSprout > 0 &&
+          summary.sun + summary.water + summary.sprout === 0;
+        setSun(hasSeedCounts ? p.reactionSun : summary.sun);
+        setWater(hasSeedCounts ? p.reactionWater : summary.water);
+        setSprout(hasSeedCounts ? p.reactionSprout : summary.sprout);
+        setMyReaction(summary.myReaction);
+      }
     } catch {
       setError(true);
     } finally {
@@ -62,6 +81,19 @@ export default function PostDetailPage() {
     setImgIndex(i);
   };
 
+  const react = async (type: ReactionType) => {
+    const user = getSession();
+    if (!post || !user) {
+      router.push("/login");
+      return;
+    }
+    const summary = await setPostReaction(user.id, post.id, type);
+    setSun(summary.sun);
+    setWater(summary.water);
+    setSprout(summary.sprout);
+    setMyReaction(summary.myReaction);
+  };
+
   if (loading) return <Spinner />;
   if (error || !post)
     return (
@@ -84,7 +116,7 @@ export default function PostDetailPage() {
 
   return (
     <div className="flex min-h-screen flex-col pb-20 sm:min-h-[calc(100vh-3rem)]">
-      <TopBar logo />
+      <TopBar logo onBack={() => router.replace(from)} />
 
       <div className="flex-1 animate-fade-up">
         {/* 식물 카테고리 헤더 */}
@@ -145,9 +177,9 @@ export default function PostDetailPage() {
 
         {/* 리액션 (1차 표시용) */}
         <div className="flex gap-2.5 px-5 py-4">
-          <Reaction bg="bg-sun" emoji="🌞" count={post.reactionSun} />
-          <Reaction bg="bg-water" emoji="💧" count={post.reactionWater} />
-          <Reaction bg="bg-sprout" emoji="🌱" count={post.reactionSprout} />
+          <Reaction bg="bg-sun" emoji="🌞" count={sun} active={myReaction === "sun"} onClick={() => react("sun")} />
+          <Reaction bg="bg-water" emoji="💧" count={water} active={myReaction === "water"} onClick={() => react("water")} />
+          <Reaction bg="bg-sprout" emoji="🌱" count={sprout} active={myReaction === "sprout"} onClick={() => react("sprout")} />
         </div>
 
         {/* 작성글 */}
@@ -178,17 +210,23 @@ function Reaction({
   bg,
   emoji,
   count,
+  active,
+  onClick,
 }: {
   bg: string;
   emoji: string;
   count: number;
+  active: boolean;
+  onClick: () => void;
 }) {
   return (
-    <span
-      className={`inline-flex items-center gap-1.5 rounded-full ${bg} px-3 py-1.5 text-[14px] font-semibold text-ink`}
+    <button
+      type="button"
+      onClick={onClick}
+      className={`inline-flex items-center gap-1.5 rounded-full ${bg} px-3 py-1.5 text-[14px] font-semibold text-ink transition active:scale-95 ${active ? "ring-1 ring-ink/20" : ""}`}
     >
       <span>{emoji}</span>
       {count > 0 && <span>{count}</span>}
-    </span>
+    </button>
   );
 }

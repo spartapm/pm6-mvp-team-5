@@ -1,7 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { Suspense, useCallback, useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import PloryLogo from "@/components/PloryLogo";
 import BottomNav from "@/components/BottomNav";
 import Spinner from "@/components/Spinner";
@@ -14,14 +14,17 @@ import { ellipsisName, type Post, type Species } from "@/lib/types";
 
 const ALL = "__all__";
 
-export default function HomePage() {
+function HomeInner() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [ready, setReady] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [tabs, setTabs] = useState<Species[]>([]);
-  const [active, setActive] = useState<string>(ALL);
+  const [active, setActive] = useState<string>(searchParams.get("tab") ?? ALL);
   const [posts, setPosts] = useState<Post[]>([]);
+  const refreshToken = searchParams.get("refresh");
+  const tabParam = searchParams.get("tab");
 
   useEffect(() => {
     if (!getSession()) {
@@ -61,9 +64,13 @@ export default function HomePage() {
   }, [ready, loadTabs]);
 
   useEffect(() => {
+    setActive(tabParam ?? ALL);
+  }, [tabParam]);
+
+  useEffect(() => {
     if (!ready) return;
     loadFeed(active);
-  }, [ready, active, loadFeed]);
+  }, [ready, active, refreshToken, loadFeed]);
 
   if (!ready) return <Spinner />;
 
@@ -71,22 +78,38 @@ export default function HomePage() {
     <div className="flex min-h-screen flex-col pb-20 sm:min-h-[calc(100vh-3rem)]">
       {/* 헤더 */}
       <header className="sticky top-0 z-20 bg-white/90 px-5 pb-3 pt-4 backdrop-blur-md sm:rounded-t-[28px]">
-        <PloryLogo className="text-[26px]" />
+        <div className="flex items-center justify-between">
+          <button type="button" onClick={() => router.push("/home?refresh=1")}>
+            <PloryLogo className="text-[26px]" />
+          </button>
+          <button
+            type="button"
+            aria-label="검색"
+            className="flex h-9 w-9 items-center justify-center rounded-full border border-line text-ink"
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+              <circle cx="11" cy="11" r="7" stroke="#141414" strokeWidth="1.8" />
+              <path d="M20 20l-3.2-3.2" stroke="#141414" strokeWidth="1.8" strokeLinecap="round" />
+            </svg>
+          </button>
+        </div>
         {/* 카테고리 탭 */}
-        <div className="no-scrollbar -mx-5 mt-3 flex gap-2 overflow-x-auto px-5">
+        <div className="mt-3 flex items-center gap-2">
           <Tab
             label="모두"
             active={active === ALL}
             onClick={() => setActive(ALL)}
           />
-          {tabs.map((s) => (
-            <Tab
-              key={s.id}
-              label={ellipsisName(s.name)}
-              active={active === s.id}
-              onClick={() => setActive(s.id)}
-            />
-          ))}
+          <div className="no-scrollbar -mr-5 flex flex-1 gap-2 overflow-x-auto pr-5">
+            {tabs.map((s) => (
+              <Tab
+                key={s.id}
+                label={ellipsisName(s.name)}
+                active={active === s.id}
+                onClick={() => setActive(s.id)}
+              />
+            ))}
+          </div>
         </div>
       </header>
 
@@ -115,13 +138,14 @@ export default function HomePage() {
               <button
                 key={p.id}
                 type="button"
-                onClick={() => router.push(`/post/${p.id}`)}
+                onClick={() =>
+                  router.push(
+                    `/post/${p.id}?from=${encodeURIComponent(`/home?tab=${active}`)}`
+                  )
+                }
                 className="text-left"
               >
-                <span className="mb-1.5 block truncate text-[13px] font-semibold text-ink">
-                  {ellipsisName(p.speciesName)}
-                </span>
-                <span className="block aspect-square w-full overflow-hidden rounded-xl bg-field">
+                <span className="relative block aspect-square w-full overflow-hidden rounded-xl bg-field">
                   {p.thumbnail ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
@@ -130,6 +154,9 @@ export default function HomePage() {
                       className="h-full w-full object-cover transition-transform duration-300 hover:scale-105"
                     />
                   ) : null}
+                  <span className="absolute inset-x-0 bottom-0 bg-black/35 px-2 py-1 text-[12px] font-semibold text-white">
+                    {p.speciesName}
+                  </span>
                 </span>
               </button>
             ))}
@@ -139,6 +166,14 @@ export default function HomePage() {
 
       <BottomNav active="home" />
     </div>
+  );
+}
+
+export default function HomePage() {
+  return (
+    <Suspense fallback={<Spinner />}>
+      <HomeInner />
+    </Suspense>
   );
 }
 

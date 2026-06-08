@@ -218,23 +218,14 @@ const mapPost = (r: PostRow): Post => {
   };
 };
 
-function shuffle<T>(arr: T[]): T[] {
-  const a = arr.slice();
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
-  }
-  return a;
-}
-
-// 피드: speciesId 없으면 전체(랜덤), 있으면 해당 카테고리만(최신순)
+// 피드: speciesId 없으면 전체, 있으면 해당 카테고리만 (모두 최신순)
 export async function getFeed(speciesId?: string | null): Promise<Post[]> {
   let query = supabase.from("posts").select(POST_SELECT);
   if (speciesId) query = query.eq("species_id", speciesId);
   const { data, error } = await query.order("created_at", { ascending: false });
   if (error) throw error;
   const posts = ((data ?? []) as unknown as PostRow[]).map(mapPost);
-  return speciesId ? posts : shuffle(posts);
+  return posts;
 }
 
 export async function getPost(id: string): Promise<Post | null> {
@@ -278,6 +269,73 @@ export async function createPost(input: {
     if (imgErr) throw imgErr;
   }
   return postId;
+}
+
+// =========================================================
+// 게시글 리액션
+// =========================================================
+export type ReactionType = "sun" | "water" | "sprout";
+
+async function countReaction(postId: string, type: ReactionType): Promise<number> {
+  const { count } = await supabase
+    .from("post_reactions")
+    .select("id", { count: "exact", head: true })
+    .eq("post_id", postId)
+    .eq("reaction_type", type);
+  return count ?? 0;
+}
+
+export async function getPostReactionSummary(
+  postId: string,
+  userId?: string | null
+): Promise<{
+  sun: number;
+  water: number;
+  sprout: number;
+  myReaction: ReactionType | null;
+}> {
+  const [sun, water, sprout, mine] = await Promise.all([
+    countReaction(postId, "sun"),
+    countReaction(postId, "water"),
+    countReaction(postId, "sprout"),
+    userId
+      ? supabase
+          .from("post_reactions")
+          .select("reaction_type")
+          .eq("post_id", postId)
+          .eq("user_id", userId)
+          .maybeSingle()
+      : Promise.resolve({ data: null } as { data: null }),
+  ]);
+
+  return {
+    sun,
+    water,
+    sprout,
+    myReaction: (mine.data?.reaction_type as ReactionType | undefined) ?? null,
+  };
+}
+
+// 같은 게시글에는 사용자당 반응 1개만 유지(변경 시 덮어쓰기)
+export async function setPostReaction(
+  userId: string,
+  postId: string,
+  reactionType: ReactionType
+): Promise<{
+  sun: number;
+  water: number;
+  sprout: number;
+  myReaction: ReactionType | null;
+}> {
+  await supabase.from("post_reactions").upsert(
+    {
+      user_id: userId,
+      post_id: postId,
+      reaction_type: reactionType,
+    },
+    { onConflict: "user_id,post_id" }
+  );
+  return getPostReactionSummary(postId, userId);
 }
 
 // =========================================================

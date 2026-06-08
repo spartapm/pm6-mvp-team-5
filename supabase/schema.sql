@@ -66,12 +66,24 @@ create table if not exists follows (
   unique (user_id, species_id)
 );
 
+-- ---------- 게시글 리액션 (사용자 → 게시글 1개 반응) ----------
+create table if not exists post_reactions (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null references users(id) on delete cascade,
+  post_id uuid not null references posts(id) on delete cascade,
+  reaction_type text not null check (reaction_type in ('sun','water','sprout')),
+  created_at timestamptz not null default now(),
+  unique (user_id, post_id)
+);
+
 -- ---------- 인덱스 ----------
 create index if not exists idx_plants_user on plants(user_id);
 create index if not exists idx_posts_species on posts(species_id);
 create index if not exists idx_posts_created on posts(created_at desc);
 create index if not exists idx_post_images_post on post_images(post_id);
 create index if not exists idx_follows_user on follows(user_id);
+create index if not exists idx_post_reactions_post on post_reactions(post_id);
+create index if not exists idx_post_reactions_user on post_reactions(user_id);
 
 -- ---------- RLS (MVP 데모용: anon 전체 허용) ----------
 -- ※ 운영 단계에서는 사용자별 정책으로 강화하세요.
@@ -81,11 +93,12 @@ alter table plants enable row level security;
 alter table posts enable row level security;
 alter table post_images enable row level security;
 alter table follows enable row level security;
+alter table post_reactions enable row level security;
 
 do $$
 declare t text;
 begin
-  foreach t in array array['users','species','plants','posts','post_images','follows']
+  foreach t in array array['users','species','plants','posts','post_images','follows','post_reactions']
   loop
     execute format('drop policy if exists "anon all %1$s" on %1$s;', t);
     execute format('create policy "anon all %1$s" on %1$s for all to anon, authenticated using (true) with check (true);', t);
