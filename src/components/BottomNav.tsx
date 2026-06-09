@@ -10,7 +10,12 @@ export default function BottomNav({ active }: { active?: Tab }) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const current: Tab =
-    active ?? (pathname?.startsWith("/upload") ? "upload" : "home");
+    active ??
+    (pathname?.startsWith("/upload")
+      ? "upload"
+      : pathname?.startsWith("/mypage")
+      ? "garden"
+      : "home");
   const query = searchParams?.toString();
   const currentUrl = `${pathname ?? "/home"}${query ? `?${query}` : ""}`;
   const activeTab = searchParams?.get("tab") ?? "__all__";
@@ -57,6 +62,7 @@ export default function BottomNav({ active }: { active?: Tab }) {
       {/* My 가든 (leaf) — 현재 범위 외 */}
       <button
         type="button"
+        onClick={() => router.push("/mypage")}
         aria-label="My 가든"
         className="flex h-12 w-12 items-center justify-center transition-transform active:scale-90"
       >
@@ -67,7 +73,7 @@ export default function BottomNav({ active }: { active?: Tab }) {
             strokeWidth="2"
             strokeLinecap="round"
             strokeLinejoin="round"
-            opacity="0.55"
+            opacity={current === "garden" ? 1 : 0.55}
           />
         </svg>
       </button>

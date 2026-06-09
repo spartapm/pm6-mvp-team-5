@@ -110,7 +110,7 @@ function PlantRegisterInner() {
         onBack={() => router.replace(`/upload?carry=1&from=${encodeURIComponent(from)}`)}
       />
 
-      <div className="relative z-20 flex-1 animate-fade-up pb-24">
+      <div className="relative z-20 min-h-0 flex-1 overflow-y-auto animate-fade-up pb-4">
         {/* 대표 이미지 추가 */}
         <button
           type="button"
@@ -200,7 +200,7 @@ function PlantRegisterInner() {
 
       {/* 등록하기 CTA */}
       <div
-        className={`sticky bottom-0 z-10 mx-auto w-full max-w-[420px] bg-white/90 px-4 pt-4 pb-[calc(1rem+env(safe-area-inset-bottom))] shadow-bar backdrop-blur-md sm:rounded-b-[28px] ${
+        className={`shrink-0 bg-white/90 px-4 pt-4 pb-[calc(1rem+env(safe-area-inset-bottom))] shadow-bar backdrop-blur-md sm:rounded-b-[28px] ${
           speciesListOpen ? "hidden" : ""
         }`}
       >
