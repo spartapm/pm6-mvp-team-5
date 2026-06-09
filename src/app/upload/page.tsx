@@ -45,6 +45,7 @@ function UploadInner() {
   const [uploading, setUploading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [popup, setPopup] = useState<string | null>(null);
+  const plantListOpen = dropdownOpen;
   const from = params.get("from") ?? "/home?tab=__all__";
   const carry = params.get("carry") === "1";
 
@@ -174,7 +175,7 @@ function UploadInner() {
   if (!ready) return <Spinner />;
 
   return (
-    <div className="flex min-h-screen flex-col pb-24 sm:min-h-[calc(100vh-3rem)]">
+    <div className="flex min-h-screen flex-col sm:min-h-[calc(100vh-3rem)]">
       <TopBar
         title="새 게시물"
         onBack={() => {
@@ -183,7 +184,7 @@ function UploadInner() {
         }}
       />
 
-      <div className="flex-1 animate-fade-up">
+      <div className="relative z-20 flex-1 animate-fade-up pb-24">
         {/* 이미지 미리보기 */}
         <div className="flex aspect-square w-full items-center justify-center bg-field">
           {images.length > 0 ? (
@@ -268,7 +269,7 @@ function UploadInner() {
             </button>
 
             {dropdownOpen && (
-              <div className="absolute z-20 mt-1 w-full overflow-hidden rounded-xl border border-line bg-white shadow-card animate-pop-in">
+              <div className="absolute z-40 mt-1 w-full overflow-hidden rounded-xl border border-line bg-white shadow-card animate-pop-in">
                 <div className="h-44 overflow-y-auto overscroll-contain">
                   {plants.map((p) => (
                     <button
@@ -331,7 +332,11 @@ function UploadInner() {
       </div>
 
       {/* 게시하기 CTA */}
-      <div className="absolute inset-x-0 bottom-0 mx-auto max-w-[420px] bg-white/90 p-4 shadow-bar backdrop-blur-md sm:rounded-b-[28px]">
+      <div
+        className={`sticky bottom-0 z-10 mx-auto w-full max-w-[420px] bg-white/90 px-4 pt-4 pb-[calc(1rem+env(safe-area-inset-bottom))] shadow-bar backdrop-blur-md sm:rounded-b-[28px] ${
+          plantListOpen ? "hidden" : ""
+        }`}
+      >
         <button
           type="button"
           onClick={submit}

@@ -104,13 +104,13 @@ function PlantRegisterInner() {
   };
 
   return (
-    <div className="flex min-h-screen flex-col pb-24 sm:min-h-[calc(100vh-3rem)]">
+    <div className="flex min-h-screen flex-col sm:min-h-[calc(100vh-3rem)]">
       <TopBar
         title="내 식물 등록하기"
         onBack={() => router.replace(`/upload?carry=1&from=${encodeURIComponent(from)}`)}
       />
 
-      <div className="relative z-20 flex-1 animate-fade-up">
+      <div className="relative z-20 flex-1 animate-fade-up pb-24">
         {/* 대표 이미지 추가 */}
         <button
           type="button"
@@ -200,7 +200,7 @@ function PlantRegisterInner() {
 
       {/* 등록하기 CTA */}
       <div
-        className={`absolute inset-x-0 bottom-0 z-10 mx-auto max-w-[420px] bg-white/90 p-4 shadow-bar backdrop-blur-md sm:rounded-b-[28px] ${
+        className={`sticky bottom-0 z-10 mx-auto w-full max-w-[420px] bg-white/90 px-4 pt-4 pb-[calc(1rem+env(safe-area-inset-bottom))] shadow-bar backdrop-blur-md sm:rounded-b-[28px] ${
           speciesListOpen ? "hidden" : ""
         }`}
       >
