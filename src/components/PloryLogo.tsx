@@ -1,15 +1,18 @@
-// Plory 워드마크 (블랙, 볼드)
+import Image from "next/image";
+
 export default function PloryLogo({
-  className = "text-[26px]",
+  className = "",
 }: {
   className?: string;
 }) {
   return (
-    <span
-      className={`font-extrabold tracking-tight text-ink ${className}`}
-      style={{ fontFamily: "Pretendard, sans-serif" }}
-    >
-      Plory
-    </span>
+    <Image
+      src="/plory-logo.png"
+      alt="Plory"
+      width={114}
+      height={38}
+      className={`h-[30px] w-auto object-contain ${className}`}
+      priority
+    />
   );
 }

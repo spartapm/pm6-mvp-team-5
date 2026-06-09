@@ -156,7 +156,7 @@ function PlantRegisterInner() {
             </div>
 
             {!selected && query.trim() && (
-              <div className="absolute z-20 mt-1 max-h-[156px] w-full overflow-y-auto rounded-xl border border-line bg-white shadow-card">
+              <div className="absolute z-20 mt-1 max-h-[48vh] w-full overflow-y-auto rounded-xl border border-line bg-white shadow-card">
                 {searching ? (
                   <p className="px-4 py-3 text-[14px] text-sub">검색 중…</p>
                 ) : results.length === 0 ? (

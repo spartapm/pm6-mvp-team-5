@@ -25,6 +25,11 @@ function HomeInner() {
   const [posts, setPosts] = useState<Post[]>([]);
   const refreshToken = searchParams.get("refresh");
   const tabParam = searchParams.get("tab");
+  const refreshHome = useCallback(() => {
+    router.push(
+      `/home?tab=${encodeURIComponent(active)}&refresh=${Date.now()}`
+    );
+  }, [router, active]);
 
   useEffect(() => {
     if (!getSession()) {
@@ -79,7 +84,7 @@ function HomeInner() {
       {/* 헤더 */}
       <header className="sticky top-0 z-20 bg-white/90 px-5 pb-3 pt-4 backdrop-blur-md sm:rounded-t-[28px]">
         <div className="flex items-center justify-between">
-          <button type="button" onClick={() => router.push("/home?refresh=1")}>
+          <button type="button" onClick={refreshHome}>
             <PloryLogo className="text-[26px]" />
           </button>
           <button

@@ -117,6 +117,7 @@ function UploadInner() {
     }
     if (ok.length > room) {
       setPopup(`사진은 최대 ${MAX_IMAGES}장까지 선택할 수 있습니다.`);
+      return;
     }
     const slice = ok.slice(0, Math.max(0, room));
     if (slice.length === 0) return;
@@ -237,7 +238,7 @@ function UploadInner() {
               <button
                 type="button"
                 onClick={() => removeImage(i)}
-                className="absolute right-0 top-0 flex h-5 w-5 items-center justify-center rounded-full bg-black/70 text-white"
+                className="absolute right-1 top-1 flex h-5 w-5 items-center justify-center rounded-full bg-black/70 text-white"
                 aria-label="사진 제거"
               >
                 ×
@@ -267,31 +268,33 @@ function UploadInner() {
             </button>
 
             {dropdownOpen && (
-              <div className="absolute z-20 mt-1 max-h-56 w-full overflow-y-auto rounded-xl border border-line bg-white shadow-card animate-pop-in">
-                {plants.map((p) => (
-                  <button
-                    key={p.id}
-                    type="button"
-                    onClick={() => {
-                      setPlantId(p.id);
-                      persist({ plantId: p.id });
-                      setDropdownOpen(false);
-                    }}
-                    className="flex w-full items-center gap-3 px-4 py-3 text-left hover:bg-field"
-                  >
-                    <span className="h-7 w-7 flex-none overflow-hidden rounded-full bg-field">
-                      {p.imageUrl ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img src={p.imageUrl} alt="" className="h-full w-full object-cover" />
-                      ) : null}
-                    </span>
-                    <span className="truncate text-[15px] text-ink">{p.label}</span>
-                  </button>
-                ))}
+              <div className="absolute z-20 mt-1 w-full overflow-hidden rounded-xl border border-line bg-white shadow-card animate-pop-in">
+                <div className="max-h-[50vh] overflow-y-auto">
+                  {plants.map((p) => (
+                    <button
+                      key={p.id}
+                      type="button"
+                      onClick={() => {
+                        setPlantId(p.id);
+                        persist({ plantId: p.id });
+                        setDropdownOpen(false);
+                      }}
+                      className="flex w-full items-center gap-3 px-4 py-3 text-left hover:bg-field"
+                    >
+                      <span className="h-7 w-7 flex-none overflow-hidden rounded-full bg-field">
+                        {p.imageUrl ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img src={p.imageUrl} alt="" className="h-full w-full object-cover" />
+                        ) : null}
+                      </span>
+                      <span className="truncate text-[15px] text-ink">{p.label}</span>
+                    </button>
+                  ))}
+                </div>
                 <button
                   type="button"
                   onClick={goRegisterPlant}
-                  className="flex w-full items-center gap-2 border-t border-line px-4 py-3 text-left text-ink hover:bg-field"
+                  className="sticky bottom-0 flex w-full items-center gap-2 border-t border-line bg-white px-4 py-3 text-left text-ink hover:bg-field"
                 >
                   <span className="flex h-7 w-7 flex-none items-center justify-center rounded-full bg-key text-white">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
