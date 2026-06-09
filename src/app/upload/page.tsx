@@ -269,7 +269,7 @@ function UploadInner() {
 
             {dropdownOpen && (
               <div className="absolute z-20 mt-1 w-full overflow-hidden rounded-xl border border-line bg-white shadow-card animate-pop-in">
-                <div className="max-h-[50vh] overflow-y-auto">
+                <div className="h-44 overflow-y-auto overscroll-contain">
                   {plants.map((p) => (
                     <button
                       key={p.id}

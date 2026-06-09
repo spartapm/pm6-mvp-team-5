@@ -30,6 +30,7 @@ function PlantRegisterInner() {
   const [nickname, setNickname] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [popup, setPopup] = useState<string | null>(null);
+  const speciesListOpen = !selected && query.trim().length > 0;
 
   useEffect(() => {
     if (!getSession()) router.replace("/login");
@@ -109,7 +110,7 @@ function PlantRegisterInner() {
         onBack={() => router.replace(`/upload?carry=1&from=${encodeURIComponent(from)}`)}
       />
 
-      <div className="flex-1 animate-fade-up">
+      <div className="relative z-20 flex-1 animate-fade-up">
         {/* 대표 이미지 추가 */}
         <button
           type="button"
@@ -155,8 +156,8 @@ function PlantRegisterInner() {
               )}
             </div>
 
-            {!selected && query.trim() && (
-              <div className="absolute z-20 mt-1 max-h-[48vh] w-full overflow-y-auto rounded-xl border border-line bg-white shadow-card">
+            {speciesListOpen && (
+              <div className="absolute z-40 mt-1 max-h-[48vh] w-full overflow-y-auto rounded-xl border border-line bg-white shadow-card">
                 {searching ? (
                   <p className="px-4 py-3 text-[14px] text-sub">검색 중…</p>
                 ) : results.length === 0 ? (
@@ -198,7 +199,11 @@ function PlantRegisterInner() {
       </div>
 
       {/* 등록하기 CTA */}
-      <div className="absolute inset-x-0 bottom-0 mx-auto max-w-[420px] bg-white/90 p-4 shadow-bar backdrop-blur-md sm:rounded-b-[28px]">
+      <div
+        className={`absolute inset-x-0 bottom-0 z-10 mx-auto max-w-[420px] bg-white/90 p-4 shadow-bar backdrop-blur-md sm:rounded-b-[28px] ${
+          speciesListOpen ? "hidden" : ""
+        }`}
+      >
         <button
           type="button"
           onClick={submit}
