@@ -271,6 +271,45 @@ export async function createPost(input: {
   return postId;
 }
 
+export async function getMyPostCount(userId: string): Promise<number> {
+  const { count, error } = await supabase
+    .from("posts")
+    .select("id", { count: "exact", head: true })
+    .eq("user_id", userId);
+  if (error) throw error;
+  return count ?? 0;
+}
+
+export async function getFollowingCount(userId: string): Promise<number> {
+  const { count, error } = await supabase
+    .from("follows")
+    .select("id", { count: "exact", head: true })
+    .eq("user_id", userId);
+  if (error) throw error;
+  return count ?? 0;
+}
+
+type PlantLatestPostRow = {
+  id: string;
+  plant_id: string;
+  created_at: string;
+};
+
+export async function getPlantLatestPostMap(userId: string): Promise<Record<string, string>> {
+  const { data, error } = await supabase
+    .from("posts")
+    .select("id, plant_id, created_at")
+    .eq("user_id", userId)
+    .order("created_at", { ascending: false });
+  if (error) throw error;
+
+  const latestMap: Record<string, string> = {};
+  for (const row of (data ?? []) as PlantLatestPostRow[]) {
+    if (!latestMap[row.plant_id]) latestMap[row.plant_id] = row.id;
+  }
+  return latestMap;
+}
+
 // =========================================================
 // 게시글 리액션
 // =========================================================
