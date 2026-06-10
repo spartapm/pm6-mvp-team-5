@@ -76,7 +76,7 @@ export default function MyPage() {
               />
             </svg>
           </button>
-          <h1 className="pointer-events-none absolute left-1/2 -translate-x-1/2 text-[30px] font-extrabold text-ink">
+          <h1 className="pointer-events-none absolute left-1/2 -translate-x-1/2 text-[17px] font-bold text-ink">
             My 가든
           </h1>
         </div>
@@ -96,7 +96,7 @@ export default function MyPage() {
               </svg>
             </span>
             <div className="min-w-0 flex-1">
-              <p className="truncate text-[38px] font-extrabold text-ink">@{user.nickname}</p>
+              <p className="truncate text-[24px] font-bold leading-tight text-ink">@{user.nickname}</p>
               <p className="mt-1 text-[13px] text-sub">한 줄 소개 영역입니다.</p>
             </div>
             <button
@@ -125,20 +125,20 @@ export default function MyPage() {
 
         <section className="px-5 pb-4 pt-6">
           <div className="mb-4 flex items-center justify-between">
-            <h2 className="text-[24px] font-extrabold text-ink">내 식물</h2>
+            <h2 className="text-[18px] font-bold text-ink">내 식물</h2>
             <button
               type="button"
               onClick={() =>
                 router.push(`/upload/plant?from=${encodeURIComponent("/mypage")}`)
               }
-              className="text-[16px] font-semibold text-ink underline-offset-2 hover:underline"
+              className="text-[15px] font-semibold text-ink underline-offset-2 hover:underline"
             >
               내 식물 추가
             </button>
           </div>
 
           {plants.length === 0 ? (
-            <div className="rounded-xl bg-field px-4 py-8 text-center text-[20px] text-sub">
+            <div className="rounded-xl bg-field px-4 py-8 text-center text-[14px] text-sub">
               등록된 식물이 없습니다.
             </div>
           ) : (
@@ -183,11 +183,21 @@ export default function MyPage() {
                     <span className="block truncate text-[13px] text-sub">
                       {plant.speciesName || "식물 종"}
                     </span>
-                    <span className="mt-1 block truncate text-[32px] font-bold text-ink">
+                    <span className="mt-1 block truncate text-[20px] font-bold leading-tight text-ink">
                       {plant.nickname?.trim() || "식물 별명"}
                     </span>
                   </span>
-                  <span className="text-[26px] text-ink">{">"}</span>
+                  <span className="flex h-6 w-6 items-center justify-center text-sub">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                      <path
+                        d="M9 6l6 6-6 6"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                  </span>
                 </button>
               ))}
             </div>
@@ -232,8 +242,8 @@ function Stat({
 }) {
   return (
     <div className={bordered ? "border-x border-line" : ""}>
-      <p className="text-[46px] font-extrabold leading-none text-ink">{value}</p>
-      <p className="mt-1 text-[18px] text-ink">{label}</p>
+      <p className="text-[30px] font-extrabold leading-none text-ink">{value}</p>
+      <p className="mt-1 text-[13px] text-ink">{label}</p>
     </div>
   );
 }

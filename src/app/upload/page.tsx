@@ -250,7 +250,7 @@ function UploadInner() {
 
         {/* 내 식물 선택 */}
         <div className="px-4 pt-2">
-          <p className="mb-2 text-[15px] font-bold text-ink">내 식물 선택하기</p>
+          <p className="mb-2 text-[16px] font-bold text-ink">내 식물 선택하기</p>
           <div className="relative">
             <button
               type="button"
@@ -311,7 +311,7 @@ function UploadInner() {
 
         {/* 캡션 */}
         <div className="px-4 pt-5">
-          <p className="mb-2 text-[15px] font-bold text-ink">캡션 작성하기</p>
+          <p className="mb-2 text-[16px] font-bold text-ink">캡션 작성하기</p>
           <div className="rounded-xl bg-field px-4 py-3">
             <textarea
               value={caption}

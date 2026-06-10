@@ -135,7 +135,7 @@ function PlantRegisterInner() {
 
         <div className="px-5 pt-6">
           {/* 식물 선택하기 (자동완성) */}
-          <p className="mb-2 text-[15px] font-bold text-ink">식물 선택하기</p>
+          <p className="mb-2 text-[16px] font-bold text-ink">식물 선택하기</p>
           <div className="relative">
             <div className="flex items-center rounded-xl bg-field px-4">
               <input
@@ -185,7 +185,7 @@ function PlantRegisterInner() {
           </div>
 
           {/* 식물 이름 입력 (별명) */}
-          <p className="mb-2 mt-6 text-[15px] font-bold text-ink">
+          <p className="mb-2 mt-6 text-[16px] font-bold text-ink">
             식물 이름 입력 <span className="text-[12px] font-normal text-sub">*반려식물 별명</span>
           </p>
           <input
