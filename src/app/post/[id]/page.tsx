@@ -10,7 +10,7 @@ import {
   getPostReactionSummary,
   getSession,
   isFollowing,
-  setPostReaction,
+  togglePostReaction,
   toggleFollow,
   type ReactionType,
 } from "@/lib/store";
@@ -29,7 +29,7 @@ export default function PostDetailPage() {
   const [sun, setSun] = useState(0);
   const [water, setWater] = useState(0);
   const [sprout, setSprout] = useState(0);
-  const [myReaction, setMyReaction] = useState<ReactionType | null>(null);
+  const [myReactions, setMyReactions] = useState<ReactionType[]>([]);
   const [following, setFollowing] = useState(false);
   const [imgIndex, setImgIndex] = useState(0);
   const trackRef = useRef<HTMLDivElement>(null);
@@ -51,7 +51,7 @@ export default function PostDetailPage() {
         setSun(hasSeedCounts ? p.reactionSun : summary.sun);
         setWater(hasSeedCounts ? p.reactionWater : summary.water);
         setSprout(hasSeedCounts ? p.reactionSprout : summary.sprout);
-        setMyReaction(summary.myReaction);
+        setMyReactions(summary.myReactions);
       }
     } catch {
       setError(true);
@@ -87,11 +87,11 @@ export default function PostDetailPage() {
       router.push("/login");
       return;
     }
-    const summary = await setPostReaction(user.id, post.id, type);
+    const summary = await togglePostReaction(user.id, post.id, type);
     setSun(summary.sun);
     setWater(summary.water);
     setSprout(summary.sprout);
-    setMyReaction(summary.myReaction);
+    setMyReactions(summary.myReactions);
   };
 
   if (loading) return <Spinner />;
@@ -177,9 +177,9 @@ export default function PostDetailPage() {
 
         {/* 리액션 (1차 표시용) */}
         <div className="flex gap-2.5 px-5 py-4">
-          <Reaction bg="bg-sun" emoji="🌞" count={sun} active={myReaction === "sun"} onClick={() => react("sun")} />
-          <Reaction bg="bg-water" emoji="💧" count={water} active={myReaction === "water"} onClick={() => react("water")} />
-          <Reaction bg="bg-sprout" emoji="🌱" count={sprout} active={myReaction === "sprout"} onClick={() => react("sprout")} />
+          <Reaction bg="bg-sun" emoji="🌞" count={sun} active={myReactions.includes("sun")} onClick={() => react("sun")} />
+          <Reaction bg="bg-water" emoji="💧" count={water} active={myReactions.includes("water")} onClick={() => react("water")} />
+          <Reaction bg="bg-sprout" emoji="🌱" count={sprout} active={myReactions.includes("sprout")} onClick={() => react("sprout")} />
         </div>
 
         {/* 작성글 */}

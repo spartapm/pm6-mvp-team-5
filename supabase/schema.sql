@@ -66,14 +66,14 @@ create table if not exists follows (
   unique (user_id, species_id)
 );
 
--- ---------- 게시글 리액션 (사용자 → 게시글 1개 반응) ----------
+-- ---------- 게시글 리액션 (사용자 → 게시글 다중 반응 가능) ----------
 create table if not exists post_reactions (
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null references users(id) on delete cascade,
   post_id uuid not null references posts(id) on delete cascade,
   reaction_type text not null check (reaction_type in ('sun','water','sprout')),
   created_at timestamptz not null default now(),
-  unique (user_id, post_id)
+  unique (user_id, post_id, reaction_type)
 );
 
 -- ---------- 인덱스 ----------

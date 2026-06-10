@@ -331,7 +331,7 @@ export async function getPostReactionSummary(
   sun: number;
   water: number;
   sprout: number;
-  myReaction: ReactionType | null;
+  myReactions: ReactionType[];
 }> {
   const [sun, water, sprout, mine] = await Promise.all([
     countReaction(postId, "sun"),
@@ -343,20 +343,21 @@ export async function getPostReactionSummary(
           .select("reaction_type")
           .eq("post_id", postId)
           .eq("user_id", userId)
-          .maybeSingle()
-      : Promise.resolve({ data: null } as { data: null }),
+      : Promise.resolve({ data: [] } as { data: { reaction_type: ReactionType }[] }),
   ]);
 
   return {
     sun,
     water,
     sprout,
-    myReaction: (mine.data?.reaction_type as ReactionType | undefined) ?? null,
+    myReactions: ((mine.data ?? []) as { reaction_type: ReactionType }[]).map(
+      (row) => row.reaction_type
+    ),
   };
 }
 
-// 같은 게시글에는 사용자당 반응 1개만 유지(변경 시 덮어쓰기)
-export async function setPostReaction(
+// 반응은 종류별로 독립 토글(한 게시글에 여러 반응 동시 가능)
+export async function togglePostReaction(
   userId: string,
   postId: string,
   reactionType: ReactionType
@@ -364,16 +365,32 @@ export async function setPostReaction(
   sun: number;
   water: number;
   sprout: number;
-  myReaction: ReactionType | null;
+  myReactions: ReactionType[];
 }> {
-  await supabase.from("post_reactions").upsert(
-    {
+  const { data: exists, error: checkError } = await supabase
+    .from("post_reactions")
+    .select("id")
+    .eq("user_id", userId)
+    .eq("post_id", postId)
+    .eq("reaction_type", reactionType)
+    .maybeSingle();
+  if (checkError) throw checkError;
+
+  if (exists?.id) {
+    const { error: delError } = await supabase
+      .from("post_reactions")
+      .delete()
+      .eq("id", exists.id);
+    if (delError) throw delError;
+  } else {
+    const { error: insError } = await supabase.from("post_reactions").insert({
       user_id: userId,
       post_id: postId,
       reaction_type: reactionType,
-    },
-    { onConflict: "user_id,post_id" }
-  );
+    });
+    if (insError) throw insError;
+  }
+
   return getPostReactionSummary(postId, userId);
 }
 

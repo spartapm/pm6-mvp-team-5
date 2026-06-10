@@ -38,6 +38,19 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=<publishable 또는 anon key>
    - `supabase/schema.sql` (테이블 + RLS + Storage 버킷 `images`)
    - `supabase/seed_content.sql` (식물 종 25종 + 데모 피드 8건)
 
+### 기존 DB를 이미 사용 중이라면 (리액션 다중 선택 전환)
+
+`post_reactions` 제약조건을 아래 SQL로 1회 변경하세요.
+
+```sql
+alter table post_reactions
+  drop constraint if exists post_reactions_user_id_post_id_key;
+
+alter table post_reactions
+  add constraint post_reactions_user_id_post_id_reaction_type_key
+  unique (user_id, post_id, reaction_type);
+```
+
 4. 개발 서버
 
 ```bash

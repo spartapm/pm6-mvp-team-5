@@ -14,6 +14,29 @@ import { ellipsisName, type Post, type Species } from "@/lib/types";
 
 const ALL = "__all__";
 
+function seededHash(text: string): number {
+  let h = 2166136261;
+  for (let i = 0; i < text.length; i += 1) {
+    h ^= text.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  return h >>> 0;
+}
+
+function shuffleBySeed<T>(items: T[], seedText: string): T[] {
+  const next = [...items];
+  let seed = seededHash(seedText) || 1;
+  const rand = () => {
+    seed = (seed * 1664525 + 1013904223) >>> 0;
+    return seed / 4294967296;
+  };
+  for (let i = next.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(rand() * (i + 1));
+    [next[i], next[j]] = [next[j], next[i]];
+  }
+  return next;
+}
+
 function HomeInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -55,13 +78,17 @@ function HomeInner() {
     setError(false);
     try {
       const data = await getFeed(speciesId === ALL ? null : speciesId);
-      setPosts(data);
+      // 새로고침(refresh 토큰 존재) 시 탭 내 노출 순서를 랜덤화한다.
+      const displayPosts = refreshToken
+        ? shuffleBySeed(data, `${speciesId}-${refreshToken}`)
+        : data;
+      setPosts(displayPosts);
     } catch {
       setError(true);
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [refreshToken]);
 
   useEffect(() => {
     if (!ready) return;
